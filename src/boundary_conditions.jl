@@ -1,4 +1,3 @@
-
 # Function to apply boundary conditions
 function apply_boundary_conditions!(K, f, fixed_dofs::Vector{Int})
     for dof in fixed_dofs
@@ -15,6 +14,24 @@ end
 function apply_boundary_conditions!(K, f, fixed_nodes::Dict)
     fixed_dofs = get_fixed_dofs(fixed_nodes)
     apply_boundary_conditions!(K, f, fixed_dofs)
+    return nothing
+end
+
+# Function to apply boundary conditions to mass matrix
+function apply_boundary_conditions_mass!(M, fixed_dofs::Vector{Int})
+    for dof in fixed_dofs
+        M[dof, :] .= 0.0
+        M[:, dof] .= 0.0
+        M[dof, dof] = 1.0  # Keep diagonal term for stability
+    end
+    dropzeros!(M)
+    return nothing
+end
+
+# Function to apply boundary conditions to mass matrix
+function apply_boundary_conditions_mass!(M, fixed_nodes::Dict)
+    fixed_dofs = get_fixed_dofs(fixed_nodes)
+    apply_boundary_conditions_mass!(M, fixed_dofs)
     return nothing
 end
 
